@@ -1,5 +1,7 @@
 # eGain Easy Insight - API Documentation
 
+[Live Swaqgger UI](https://srini-github.github.io/egain-easy-insight/swagger-ui.html)
+
 ## Table of Contents
 
 1. [Overview & Design Principles](#1-overview--design-principles)
