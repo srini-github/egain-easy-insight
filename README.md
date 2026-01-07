@@ -105,7 +105,7 @@ Built with React 19, TypeScript, and Vite, this application showcases modern web
 
 ```bash
 # Clone the repository
-git clone <your-repo-url>
+git clone https://github.com/srini-github/egain-easy-insight.git
 cd egain-1_vs_code
 
 # Install dependencies
@@ -423,7 +423,7 @@ npm install --save-dev gh-pages
 npm run deploy
 ```
 
-**URL**: `https://yourusername.github.io/repo-name`
+**URL**: `[(https://github.com/srini-github/egain-easy-insight.git`](https://github.com/srini-github/egain-easy-insight.git)
 
 **Note**: Requires `base` configuration in `vite.config.js`:
 ```js
