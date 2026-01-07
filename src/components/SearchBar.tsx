@@ -106,7 +106,7 @@ const SearchBar = () => {
                             onClick={() => setQuery('')}
                             className={`btn-ghost ${styles.clearButton}`}
                         >
-                            <X size={18} />
+                            <X size={14} />
                         </button>
                     )}
                     <button

@@ -138,3 +138,80 @@
   color: #8c6e00;
   font-weight: 500;
 }
+
+/* Mobile Responsive Styles */
+@media (max-width: 900px) {
+  .container {
+    padding: 12px 16px;
+    margin-bottom: 16px;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .headerLeft {
+    gap: 6px;
+  }
+
+  .tenantLogo {
+    font-size: 1.2rem;
+  }
+
+  .headerTitle {
+    font-size: 0.7rem;
+  }
+
+  .customerSwitcher {
+    width: 100%;
+    padding: 6px 10px;
+    font-size: 0.85rem;
+  }
+
+  .detailsGrid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .customerInfo {
+    gap: 8px;
+  }
+
+  .avatar {
+    width: 32px;
+    height: 32px;
+    font-size: 0.8rem;
+  }
+
+  .customerName {
+    font-size: 0.9rem;
+  }
+
+  .accountNumber {
+    font-size: 0.7rem;
+  }
+
+  .tierContainer {
+    justify-content: flex-start;
+  }
+
+  .tierBadge {
+    padding: 4px 10px;
+    font-size: 0.75rem;
+  }
+
+  .infoItem {
+    font-size: 0.8rem;
+    gap: 4px;
+  }
+
+  .recentIssue {
+    margin-top: 10px;
+    padding: 8px 10px;
+    font-size: 0.8rem;
+    gap: 6px;
+  }
+}

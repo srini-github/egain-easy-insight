@@ -90,9 +90,9 @@ const AppLayout = () => {
           <ErrorBoundary>
             {!hasSearched ? (
               <div className="empty-state-container" style={{ textAlign: 'center', marginTop: '80px', opacity: 0.6 }}>
-                <HelpCircle size={64} strokeWidth={1} />
-                <h2 style={{ marginTop: '20px', fontWeight: 500 }}>How can we help?</h2>
-                <p>Search for answers, guides, and troubleshooting tips.</p>
+                <HelpCircle size={40} strokeWidth={1} />
+                <h2 style={{ marginTop: '20px', fontWeight: 500, fontSize: '0.875rem' }}>How can we help?</h2>
+                <p style={{ fontSize: '0.875rem' }}>Search for answers, guides, and troubleshooting tips.</p>
               </div>
             ) : (
               <SearchResults />

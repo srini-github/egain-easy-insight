@@ -1,5 +1,5 @@
 import React from 'react';
-import { History, Search, Trash2 } from 'lucide-react';
+import { History, Search, Trash2, Clock } from 'lucide-react';
 import { useSearchQuery, useSearchActions } from '../context/SearchProvider';
 import styles from './SearchHistory.module.css';
 
@@ -16,19 +16,16 @@ const SearchHistory = () => {
         }
     }, [history.length]);
 
-    // Don't show until there's been at least one search
-    if (!hasSearched && !hasHadHistory) return null;
-
     return (
-        <div className={`glass-panel history-container ${styles.container}`}>
+        <div className={`card-panel history-container ${styles.container}`}>
             <div className={styles.header}>
-                <h4 className={styles.title}>
-                    <History size={18} color="var(--accent-color)" />
+                <h5 className={styles.title}>
+                    <History size={16} color="var(--text-secondary)" />
                     Search History
-                </h4>
+                </h5>
                 {history.length > 0 && (
                     <button className={`btn-ghost ${styles.clearButton}`} onClick={clearHistory} title="Clear history">
-                        <Trash2 size={14} />
+                        <Trash2 size={16} />
                     </button>
                 )}
             </div>
@@ -49,7 +46,8 @@ const SearchHistory = () => {
                 </ul>
             ) : (
                 <div className={styles.emptyState}>
-                    No recent searches
+                    <Clock size={40} strokeWidth={1} color="var(--text-secondary)" />
+                    <p>No recent searches yet</p>
                 </div>
             )}
         </div>

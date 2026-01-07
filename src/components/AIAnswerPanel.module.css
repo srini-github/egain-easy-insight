@@ -282,3 +282,38 @@
   font-size: 0.85rem;
   padding: 8px 20px;
 }
+
+/* Mobile Responsive Styles */
+@media (max-width: 900px) {
+  .responseContainer {
+    padding: 14px;
+  }
+
+  .responseLayout {
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .aiIcon {
+    width: 32px;
+    height: 32px;
+    align-self: flex-start;
+  }
+
+  .contentContainer {
+    width: 100%;
+  }
+
+  .answerBox {
+    padding: 14px 16px;
+  }
+
+  .answerText {
+    font-size: 0.875rem;
+  }
+
+  .greeting {
+    padding: 8px 12px;
+    font-size: 0.85rem;
+  }
+}

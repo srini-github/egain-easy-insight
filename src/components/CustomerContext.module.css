@@ -1,0 +1,260 @@
+/* Customer Context Bar - Mobile-First Design */
+
+.contextBar {
+  background: #f8fafc;
+  border-bottom: 1px solid var(--border-color);
+  padding: 8px 8px;
+  margin-bottom: -20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  font-size: 0.8125rem;
+  min-height: 0;
+}
+
+.customerSection {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sectionLabel {
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.dropdownContainer {
+  position: relative;
+}
+
+.customerButton {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #fff;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+.avatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.7rem;
+}
+
+.customerName {
+  text-align: left;
+}
+
+.nameText {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 0.8125rem;
+}
+
+.dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 4px;
+  background: #fff;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  overflow: hidden;
+  width: 100%;
+}
+
+.dropdownItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 12px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+}
+
+.dropdownItem.active {
+  background: #f0f7ff;
+}
+
+.dropdownAvatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.7rem;
+}
+
+.dropdownName {
+  font-weight: 500;
+  font-size: 0.8125rem;
+  color: var(--text-primary);
+}
+
+.dropdownTier {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+}
+
+.divider {
+  width: 1px;
+  height: 24px;
+  background: var(--border-color);
+}
+
+.infoGrid {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  color: var(--text-secondary);
+}
+
+.infoItem {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.infoLabel {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  color: var(--text-secondary);
+}
+
+.infoValue {
+  font-weight: 500;
+  color: var(--text-primary);
+  font-size: 0.8125rem;
+}
+
+.phoneValue {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.reasonSection {
+  color: var(--text-secondary);
+}
+
+/* Mobile Responsive Styles */
+@media (max-width: 900px) {
+  .contextBar {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 16px 16px;
+    gap: 16px;
+    background: #fafbfc;
+  }
+
+  .customerSection {
+    width: 100%;
+    gap: 12px;
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .sectionLabel {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #6b7280;
+    flex-shrink: 0;
+  }
+
+  .dropdownContainer {
+    flex: 1;
+  }
+
+  .customerButton {
+    padding: 4px 12px;
+    gap: 8px;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .avatar {
+    width: 28px;
+    height: 28px;
+    font-size: 0.7rem;
+  }
+
+  .nameText {
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+
+  .divider {
+    display: none;
+  }
+
+  .infoGrid {
+    display: grid;
+    grid-template-columns: minmax(80px, auto) minmax(120px, auto) minmax(140px, 1fr);
+    gap: 12px;
+    width: 100%;
+    align-items: start;
+  }
+
+  .infoItem {
+    gap: 4px;
+    min-width: 0;
+  }
+
+  .infoLabel {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+
+  .infoValue {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #111827;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .phoneValue {
+    white-space: normal;
+  }
+
+  .reasonSection {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+
+  .reasonSection .infoLabel {
+    font-size: 0.7rem;
+    font-weight: 600;
+  }
+
+  .reasonSection .infoValue {
+    font-size: 0.875rem;
+  }
+}

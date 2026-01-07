@@ -12,9 +12,10 @@
   display: flex;
   align-items: center;
   background: #fff;
-  border-radius: 18px;
+  border-radius: 12px;
   padding: 4px 8px 4px 16px;
   box-shadow: var(--card-shadow);
+  border: 2px solid #d1d5db;
 }
 
 .searchInput {
@@ -106,24 +107,52 @@
 
 /* Responsive Styles */
 @media (max-width: 900px) {
+  .container {
+    margin-top: 8px;
+  }
+
   .inputWrapper {
-    padding: 4px 4px 4px 12px;
+    padding: 4px 4px 4px 10px;
     border-radius: 12px;
   }
 
   .searchInput {
     padding-left: 32px !important;
-    padding-right: 90px !important;
-    height: 44px !important;
+    padding-right: 80px !important;
+    height: 46px !important;
     font-size: 0.9rem !important;
   }
 
   .searchActions {
-    right: 8px;
+    right: 6px;
     gap: 4px;
   }
 
   .searchIcon {
-    left: 16px !important;
+    left: 14px !important;
+  }
+
+  .clearButton {
+    padding: 6px;
+    border-radius: 50%;
+  }
+
+  .searchButton {
+    font-size: 0.85rem;
+    padding: 8px 12px !important;
+    min-width: auto;
+  }
+
+  .suggestionItem {
+    padding: 10px 16px;
+  }
+
+  .suggestionText {
+    font-size: 0.9rem;
+  }
+
+  .validationError {
+    font-size: 0.8rem;
+    padding: 6px 10px;
   }
 }

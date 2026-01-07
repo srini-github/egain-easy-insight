@@ -87,8 +87,8 @@
   /* Explicit ordering of children */
   .search-bar-container {
     order: 1;
-    margin-bottom: 0;
-    margin-top: 32px;
+    margin-bottom: 12px;
+    margin-top: 16px;
     width: 100%;
   }
 
@@ -96,6 +96,16 @@
     order: 2;
     width: 100%;
     margin-bottom: 16px;
+    margin-top: 40px !important;
+  }
+
+  .empty-state-container h2 {
+    font-size: 0.875rem !important;
+    margin-top: 16px !important;
+  }
+
+  .empty-state-container p {
+    font-size: 0.875rem !important;
   }
 
   /* AI Answer comes before filters */
@@ -130,24 +140,25 @@
   }
 
   .customer-context-bar {
-    padding: 12px 8px !important;
+    padding: 14px 16px !important;
     flex-direction: column !important;
-    align-items: stretch !important;
-    gap: 12px !important;
-    font-size: 0.75rem !important;
+    align-items: flex-start !important;
+    gap: 14px !important;
+    font-size: 0.8rem !important;
   }
 
   .header-section {
-    padding: 8px 12px !important;
+    padding: 10px 14px !important;
     height: auto !important;
-    min-height: 56px;
+    min-height: 58px;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 8px;
     justify-content: space-between !important;
   }
 
   .brand-title {
-    font-size: 0.85rem !important;
+    font-size: 0.9rem !important;
+    gap: 8px !important;
   }
 
   /* Mobile-specific header adjustments */
@@ -171,20 +182,88 @@
 
   /* Customer context mobile adjustments */
   .customer-selector-section {
-    flex-direction: column !important;
-    align-items: flex-start !important;
+    flex-direction: row !important;
+    align-items: center !important;
     width: 100% !important;
+    gap: 10px !important;
+  }
+
+  .customer-selector-section button {
+    padding: 5px 10px !important;
+    gap: 8px !important;
+  }
+
+  .customer-selector-section button > div:first-child {
+    width: 24px !important;
+    height: 24px !important;
+    font-size: 0.65rem !important;
   }
 
   .customer-info-grid {
     display: grid !important;
     grid-template-columns: 1fr 1fr !important;
-    gap: 12px !important;
+    gap: 14px !important;
     width: 100% !important;
+  }
+
+  .customer-info-grid > div {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 2px !important;
+  }
+
+  .customer-info-grid > div > span {
+    font-size: 0.65rem !important;
+    color: var(--text-secondary) !important;
+    font-weight: 500 !important;
+  }
+
+  .customer-info-grid > div > div {
+    font-size: 0.8rem !important;
+    font-weight: 500 !important;
+  }
+
+  /* Reason for Call on its own row */
+  .customer-context-bar > div:last-child {
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 2px !important;
+  }
+
+  .customer-context-bar > div:last-child > span {
+    font-size: 0.65rem !important;
+    font-weight: 500 !important;
+  }
+
+  .customer-context-bar > div:last-child > div {
+    font-size: 0.8rem !important;
+    font-weight: 500 !important;
   }
 
   .customer-divider {
     display: none !important;
+  }
+
+  /* User Switcher mobile adjustments - targets inline styles via parent class */
+  .header-section button[style*="display: flex"] {
+    padding: 4px 8px !important;
+    gap: 6px !important;
+    font-size: 0.8rem !important;
+  }
+
+  .header-section button[style*="display: flex"] > div[style*="width: 32px"] {
+    width: 28px !important;
+    height: 28px !important;
+    font-size: 0.9rem !important;
+  }
+
+  .header-section button[style*="display: flex"] > div[style*="text-align"] div:first-child {
+    font-size: 0.8rem !important;
+  }
+
+  .header-section button[style*="display: flex"] > div[style*="text-align"] div:last-child {
+    font-size: 0.65rem !important;
   }
 }
 
