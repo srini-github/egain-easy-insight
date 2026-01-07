@@ -1315,29 +1315,6 @@ SLOs are the internal measurable targets that ensure we meet SLA commitments. Fo
 | 5 | Verify service health | 2-3 min | ✅ Yes |
 | 6 | Alert on-call engineer | Immediate | ✅ Yes |
 
-**Manual Failover (for planned maintenance):**
-
-```bash
-# 1. Enable maintenance mode (returns 503 for new requests)
-kubectl set env deployment/api-gateway MAINTENANCE_MODE=true
-
-# 2. Drain active connections (wait for in-flight requests)
-kubectl rollout status deployment/api-gateway --timeout=5m
-
-# 3. Promote secondary PostgreSQL
-patronictl switchover --master pg-us-east-1 --candidate pg-eu-west-1
-
-# 4. Update DNS weight (shift traffic)
-aws route53 change-resource-record-sets --hosted-zone-id Z123 \
-  --change-batch file://failover-dns.json
-
-# 5. Disable maintenance mode
-kubectl set env deployment/api-gateway MAINTENANCE_MODE=false
-
-# 6. Verify health
-curl https://api.egain-insight.com/health
-```
-
 ### Chaos Engineering
 
 Regular failure injection to validate DR readiness:
