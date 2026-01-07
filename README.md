@@ -2,7 +2,7 @@
 
 > A modern, production-ready React application demonstrating intelligent knowledge search with AI-powered responses, personalized customer experiences, and role-based access control.
 
-**Live Demo:** [Coming Soon - Deploy to Vercel/Netlify]
+**Live Demo:** [https://egain-easy-insight.vercel.app/](https://egain-easy-insight.vercel.app/)
 
 ---
 
