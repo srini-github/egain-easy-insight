@@ -1,0 +1,134 @@
+.intent-panel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  border: 1px solid var(--border-color);
+}
+
+.intent-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.intent-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.intent-chips {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.chip {
+  padding: 4px 12px;
+  background: #fff;
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.chip-separator {
+  color: var(--text-secondary);
+}
+
+.confidence-chip {
+  padding: 4px 10px;
+  background: #fff;
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.confidence-high {
+  color: #1a7f5a;
+}
+
+.confidence-medium {
+  color: #f2a43a;
+}
+
+.intent-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.confirmed-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 16px;
+  background: #e3fcef;
+  color: #006644;
+  border-radius: 16px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.confirm-button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 16px;
+  background: #fff;
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.confirm-button:hover {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+.refresh-button {
+  padding: 6px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--text-secondary);
+  border-radius: 4px;
+}
+
+@media (max-width: 900px) {
+  .intent-panel {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 12px;
+  }
+
+  .intent-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .intent-chips {
+    gap: 6px;
+  }
+
+  .intent-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}

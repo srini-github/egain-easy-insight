@@ -1,0 +1,96 @@
+/* Filters Component Styles */
+
+.container {
+  padding: 20px 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.section {
+  /* Empty - used as container */
+}
+
+.sectionTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.5px;
+}
+
+.optionsGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.filterLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  border: 1px solid var(--chip-border);
+  background: var(--chip-bg);
+  color: var(--chip-text);
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.filterLabel:hover {
+  border-color: var(--primary-color);
+  background: var(--chip-active);
+}
+
+.filterLabelActive {
+  border-color: var(--primary-color);
+  background: var(--primary-color);
+  color: #fff;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0, 102, 204, 0.3);
+}
+
+.filterRadio {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  accent-color: var(--primary-color);
+}
+
+.filterText {
+  font-size: 0.85rem;
+}
+
+.customDatesContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.dateLabel {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.dateInput {
+  border-radius: 10px;
+  padding: 10px 14px;
+}
+
+.dateError {
+  padding: 8px 12px;
+  background: #fee;
+  border: 1px solid #fcc;
+  border-radius: 8px;
+  color: #c00;
+  font-size: 0.8rem;
+}

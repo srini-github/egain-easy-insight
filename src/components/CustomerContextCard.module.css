@@ -1,0 +1,140 @@
+/* Customer Context Card Component Styles */
+
+.container {
+  background: linear-gradient(135deg, #f8fafc 0%, #e6f3ff 100%);
+  border: 1px solid #d0e4f7;
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tenantLogo {
+  font-size: 1.5rem;
+}
+
+.headerTitle {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.customerSwitcher {
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  font-size: 0.75rem;
+  background: white;
+  cursor: pointer;
+}
+
+.detailsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.customerInfo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--primary-color);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.customerName {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.accountNumber {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.tierContainer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tierBadge {
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.tierPremier {
+  background: #e6f7ff;
+  border: 1px solid #91d5ff;
+}
+
+.tierPrivate {
+  background: #f0e6ff;
+  border: 1px solid #d3adf7;
+}
+
+.tierBusiness {
+  background: #e6ffe6;
+  border: 1px solid #95de64;
+}
+
+.tierDefault {
+  background: #f5f5f5;
+  border: 1px solid #d9d9d9;
+}
+
+.infoItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.recentIssue {
+  margin-top: 12px;
+  padding: 10px 12px;
+  background: #fff9e6;
+  border: 1px solid #ffe58f;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+}
+
+.recentIssueText {
+  color: #8c6e00;
+  font-weight: 500;
+}

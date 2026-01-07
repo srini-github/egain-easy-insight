@@ -1,0 +1,103 @@
+/* Error Fallback Component Styles */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.iconWrapper {
+  background: #fee;
+  padding: 20px;
+  border-radius: 50%;
+  margin-bottom: 24px;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+.description {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  margin-bottom: 24px;
+  max-width: 500px;
+  line-height: 1.6;
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.tryAgainButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.reloadButton {
+  border: 1px solid var(--border-color);
+  background: #fff;
+}
+
+/* Error Details (Development) */
+.errorDetails {
+  margin-top: 32px;
+  padding: 20px;
+  background: #f5f5f5;
+  border-radius: 8px;
+  text-align: left;
+  max-width: 700px;
+  width: 100%;
+  border: 1px solid #ddd;
+}
+
+.errorSummary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+.errorContent {
+  font-size: 0.85rem;
+  font-family: monospace;
+}
+
+.errorSection {
+  margin-bottom: 16px;
+}
+
+.errorLabel {
+  color: #c00;
+}
+
+.errorPre {
+  background: #fff;
+  padding: 12px;
+  border-radius: 4px;
+  overflow: auto;
+  margin-top: 8px;
+  border: 1px solid #ddd;
+}
+
+.stackPre {
+  background: #fff;
+  padding: 12px;
+  border-radius: 4px;
+  overflow: auto;
+  margin-top: 8px;
+  font-size: 0.75rem;
+  border: 1px solid #ddd;
+  max-height: 200px;
+}

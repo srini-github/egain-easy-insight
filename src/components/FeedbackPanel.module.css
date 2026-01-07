@@ -1,0 +1,174 @@
+/* Feedback Panel Component Styles */
+
+/* Feedback Given State */
+.feedbackGiven {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+}
+
+.feedbackGivenCompact {
+  padding: 8px 12px;
+}
+
+.feedbackGivenNormal {
+  padding: 12px 16px;
+}
+
+.feedbackHelpful {
+  background: #e3fcef;
+  color: #006644;
+}
+
+.feedbackNotHelpful {
+  background: #f8fafc;
+  color: var(--text-secondary);
+}
+
+/* Feedback Panel Container */
+.feedbackContainer {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.feedbackContainerCompact {
+  gap: 8px;
+}
+
+.feedbackContainerNormal {
+  gap: 12px;
+}
+
+.feedbackLabel {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 4px;
+}
+
+.feedbackButton {
+  padding: 6px 10px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.buttonText {
+  font-size: 0.8rem;
+}
+
+.divider {
+  height: 16px;
+  width: 1px;
+  background: var(--border-color);
+}
+
+/* Modal Overlay */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+}
+
+.modalContent {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  width: 100%;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+.modalContentSmall {
+  max-width: 400px;
+}
+
+.modalContentMedium {
+  max-width: 500px;
+}
+
+.modalTitle {
+  margin-bottom: 16px;
+  font-size: 1.1rem;
+}
+
+.modalDescription {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+}
+
+/* Reason Selection */
+.reasonList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.reasonOption {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 6px;
+  background: #f8fafc;
+  border: 1px solid var(--border-color);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.reasonOption:hover {
+  background: #f0f4f8;
+}
+
+.reasonOptionSelected {
+  background: #e6effc;
+  border-color: var(--primary-color);
+}
+
+.reasonText {
+  font-size: 0.9rem;
+}
+
+/* Suggestion Textarea */
+.suggestionTextarea {
+  width: 100%;
+  min-height: 150px;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  font-family: inherit;
+  resize: vertical;
+  margin-bottom: 20px;
+}
+
+/* Modal Actions */
+.modalActions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.buttonDisabled {
+  opacity: 0.5;
+}
+
+.buttonEnabled {
+  opacity: 1;
+}
