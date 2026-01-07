@@ -1,0 +1,1910 @@
+openapi: 3.1.0
+info:
+  title: eGain Easy Insight API
+  description: |
+    RESTful API for the eGain Easy Insight Knowledge Management platform.
+
+    ## Overview
+    This API enables customer service agents to search knowledge articles,
+    receive AI-powered answers, and track analytics for continuous improvement.
+
+    ## Authentication
+    All endpoints require OAuth 2.0 Bearer token authentication unless otherwise noted.
+
+    ## Rate Limiting
+    Rate limits are applied per user and per tenant. See the Rate Limiting section for details.
+
+    ## Support
+    - Documentation: https://docs.egain-insight.com
+    - Support: support@egain.com
+  version: 1.0.0
+  contact:
+    name: eGain API Support
+    email: api-support@egain.com
+    url: https://docs.egain-insight.com
+  license:
+    name: Proprietary
+    url: https://egain.com/terms
+
+servers:
+  - url: https://api.egain-insight.com/api/v1
+    description: Production
+  - url: https://api.staging.egain-insight.com/api/v1
+    description: Staging
+  - url: http://localhost:3000/api/v1
+    description: Local Development
+
+tags:
+  - name: Authentication
+    description: OAuth 2.0 token management
+  - name: Search
+    description: Knowledge search and suggestions
+  - name: Articles
+    description: Article CRUD operations
+  - name: AI
+    description: AI-powered answer generation
+  - name: Analytics
+    description: Usage tracking and reporting
+  - name: Webhooks
+    description: Webhook management
+
+security:
+  - BearerAuth: []
+  - OAuth2:
+      - search
+      - articles:read
+      - articles:write
+      - ai
+      - analytics
+
+paths:
+  # ============================================
+  # Authentication Endpoints
+  # ============================================
+  /auth/token:
+    post:
+      tags:
+        - Authentication
+      summary: Exchange authorization code for tokens
+      description: OAuth 2.0 token endpoint for exchanging authorization code for access and refresh tokens.
+      operationId: getToken
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+                - grant_type
+                - code
+                - redirect_uri
+                - client_id
+              properties:
+                grant_type:
+                  type: string
+                  enum: [authorization_code, refresh_token]
+                  example: authorization_code
+                code:
+                  type: string
+                  description: Authorization code from IdP
+                  example: AUTH_CODE_FROM_IDP
+                redirect_uri:
+                  type: string
+                  format: uri
+                  example: https://app.example.com/callback
+                client_id:
+                  type: string
+                  example: client_abc123
+                code_verifier:
+                  type: string
+                  description: PKCE code verifier
+      responses:
+        '200':
+          description: Token issued successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /auth/refresh:
+    post:
+      tags:
+        - Authentication
+      summary: Refresh access token
+      operationId: refreshToken
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - refresh_token
+              properties:
+                refresh_token:
+                  type: string
+                  example: dGhpcyBpcyBhIHJlZnJlc2g...
+      responses:
+        '200':
+          description: Token refreshed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /auth/introspect:
+    post:
+      tags:
+        - Authentication
+      summary: Introspect token validity
+      description: Validate a token and retrieve its claims. Used for service-to-service authentication.
+      operationId: introspectToken
+      security:
+        - BasicAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - token
+              properties:
+                token:
+                  type: string
+      responses:
+        '200':
+          description: Token introspection result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  active:
+                    type: boolean
+                  sub:
+                    type: string
+                  tenant_id:
+                    type: string
+                  exp:
+                    type: integer
+                  scope:
+                    type: string
+
+  # ============================================
+  # Search Endpoints
+  # ============================================
+  /knowledge/search:
+    post:
+      tags:
+        - Search
+      summary: Search knowledge articles
+      description: |
+        Full-text search across knowledge articles with filtering, faceting, and optional AI-powered answers.
+
+        Supports both keyword (BM25) and semantic (vector) search via hybrid ranking.
+      operationId: searchKnowledge
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+        - $ref: '#/components/parameters/RequestId'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SearchRequest'
+            examples:
+              basic:
+                summary: Basic search
+                value:
+                  query: "how to reset password"
+              advanced:
+                summary: Advanced search with filters
+                value:
+                  query: "password reset enterprise"
+                  filters:
+                    categories: ["billing", "technical"]
+                    tags: ["password", "security"]
+                    access_level: ["public", "internal"]
+                    status: "published"
+                  options:
+                    include_ai_answer: true
+                    highlight: true
+                    limit: 20
+                  context:
+                    customer_tier: "premium"
+      responses:
+        '200':
+          description: Search results returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchResponse'
+          headers:
+            X-RateLimit-Limit:
+              $ref: '#/components/headers/X-RateLimit-Limit'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+
+  /knowledge/suggestions:
+    get:
+      tags:
+        - Search
+      summary: Get search suggestions
+      description: Autocomplete suggestions for search queries. Optimized for low latency (<100ms).
+      operationId: getSuggestions
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+        - name: q
+          in: query
+          required: true
+          description: Partial query string
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 100
+          example: "password res"
+        - name: limit
+          in: query
+          description: Maximum suggestions to return
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 10
+            default: 5
+      responses:
+        '200':
+          description: Suggestions returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuggestionsResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+
+  # ============================================
+  # Article Endpoints
+  # ============================================
+  /articles:
+    get:
+      tags:
+        - Articles
+      summary: List articles
+      description: Retrieve a paginated list of articles with optional filters.
+      operationId: listArticles
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+        - $ref: '#/components/parameters/Cursor'
+        - $ref: '#/components/parameters/Limit'
+        - name: category_id
+          in: query
+          schema:
+            type: string
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [draft, published, archived]
+        - name: sort
+          in: query
+          schema:
+            type: string
+            enum: [created_at, updated_at, title, view_count]
+            default: updated_at
+        - name: order
+          in: query
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: desc
+      responses:
+        '200':
+          description: Articles list returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArticleListResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+    post:
+      tags:
+        - Articles
+      summary: Create a new article
+      description: Create a new knowledge article. Requires `articles:write` scope.
+      operationId: createArticle
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ArticleCreate'
+      responses:
+        '201':
+          description: Article created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArticleCreateResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+  /articles/{articleId}:
+    get:
+      tags:
+        - Articles
+      summary: Get article by ID
+      description: Retrieve a single article with full content and metadata.
+      operationId: getArticle
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+        - $ref: '#/components/parameters/ArticleId'
+      responses:
+        '200':
+          description: Article returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArticleResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      tags:
+        - Articles
+      summary: Update an article
+      description: |
+        Update an existing article. Creates a new version.
+        Use `If-Match` header with current version for optimistic locking.
+      operationId: updateArticle
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+        - $ref: '#/components/parameters/ArticleId'
+        - $ref: '#/components/parameters/IdempotencyKey'
+        - name: If-Match
+          in: header
+          description: Current article version for optimistic locking
+          schema:
+            type: string
+          example: '"v3"'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ArticleUpdate'
+      responses:
+        '200':
+          description: Article updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArticleUpdateResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+    delete:
+      tags:
+        - Articles
+      summary: Delete an article
+      description: |
+        Soft-delete an article. Moves to trash and recoverable for 30 days.
+        Requires `kb_admin` role.
+      operationId: deleteArticle
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+        - $ref: '#/components/parameters/ArticleId'
+      responses:
+        '200':
+          description: Article deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArticleDeleteResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /articles/{articleId}/versions:
+    get:
+      tags:
+        - Articles
+      summary: List article versions
+      description: Retrieve version history for an article.
+      operationId: listArticleVersions
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+        - $ref: '#/components/parameters/ArticleId'
+      responses:
+        '200':
+          description: Versions list returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArticleVersionsResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /articles/{articleId}/versions/{version}:
+    get:
+      tags:
+        - Articles
+      summary: Get specific article version
+      operationId: getArticleVersion
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+        - $ref: '#/components/parameters/ArticleId'
+        - name: version
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Article version returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArticleResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /articles/{articleId}/restore:
+    post:
+      tags:
+        - Articles
+      summary: Restore deleted article
+      operationId: restoreArticle
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+        - $ref: '#/components/parameters/ArticleId'
+      responses:
+        '200':
+          description: Article restored
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /articles/{articleId}/publish:
+    post:
+      tags:
+        - Articles
+      summary: Publish a draft article
+      operationId: publishArticle
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+        - $ref: '#/components/parameters/ArticleId'
+      responses:
+        '200':
+          description: Article published
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ============================================
+  # AI Endpoints
+  # ============================================
+  /ai/answer:
+    post:
+      tags:
+        - AI
+      summary: Generate AI-powered answer
+      description: |
+        Generate an AI answer based on the query and retrieved knowledge articles.
+
+        Supports streaming via Server-Sent Events when `Accept: text/event-stream` is specified.
+      operationId: generateAIAnswer
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+        - $ref: '#/components/parameters/RequestId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AIAnswerRequest'
+      responses:
+        '200':
+          description: AI answer generated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIAnswerResponse'
+            text/event-stream:
+              schema:
+                type: string
+                description: SSE stream of tokens
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '503':
+          description: AI service unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /ai/feedback:
+    post:
+      tags:
+        - AI
+      summary: Submit AI answer feedback
+      description: Record user feedback on AI-generated answers for quality improvement.
+      operationId: submitAIFeedback
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AIFeedbackRequest'
+      responses:
+        '201':
+          description: Feedback recorded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIFeedbackResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  # ============================================
+  # Analytics Endpoints
+  # ============================================
+  /analytics/events:
+    post:
+      tags:
+        - Analytics
+      summary: Record analytics event
+      description: |
+        Record a single analytics event. Processed asynchronously via Kafka.
+        Returns 202 Accepted immediately.
+      operationId: recordEvent
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AnalyticsEvent'
+      responses:
+        '202':
+          description: Event queued for processing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventQueuedResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /analytics/events/batch:
+    post:
+      tags:
+        - Analytics
+      summary: Batch record analytics events
+      description: |
+        Record multiple analytics events in a single request.
+        Recommended for high-volume clients. Maximum 100 events per batch.
+      operationId: recordEventsBatch
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AnalyticsEventBatch'
+      responses:
+        '202':
+          description: Batch queued for processing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchQueuedResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /analytics/reports:
+    get:
+      tags:
+        - Analytics
+      summary: Query analytics reports
+      description: Retrieve aggregated analytics data for dashboards and reporting.
+      operationId: getAnalyticsReport
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+        - name: report_type
+          in: query
+          required: true
+          schema:
+            type: string
+            enum: [search_metrics, ai_metrics, article_metrics, agent_metrics, content_health]
+        - name: date_from
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+        - name: date_to
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+        - name: granularity
+          in: query
+          schema:
+            type: string
+            enum: [hour, day, week, month]
+            default: day
+      responses:
+        '200':
+          description: Report data returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnalyticsReportResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  # ============================================
+  # Webhook Endpoints
+  # ============================================
+  /webhooks:
+    get:
+      tags:
+        - Webhooks
+      summary: List webhooks
+      operationId: listWebhooks
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+      responses:
+        '200':
+          description: Webhooks list returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookListResponse'
+
+    post:
+      tags:
+        - Webhooks
+      summary: Create webhook
+      operationId: createWebhook
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebhookCreate'
+      responses:
+        '201':
+          description: Webhook created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookResponse'
+
+  /webhooks/{webhookId}:
+    delete:
+      tags:
+        - Webhooks
+      summary: Delete webhook
+      operationId: deleteWebhook
+      parameters:
+        - $ref: '#/components/parameters/TenantId'
+        - name: webhookId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Webhook deleted
+
+# ============================================
+# Components
+# ============================================
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token from OAuth 2.0 flow
+
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://auth.egain-insight.com/authorize
+          tokenUrl: https://api.egain-insight.com/api/v1/auth/token
+          refreshUrl: https://api.egain-insight.com/api/v1/auth/refresh
+          scopes:
+            search: Search knowledge articles
+            articles:read: Read articles
+            articles:write: Create and update articles
+            articles:delete: Delete articles
+            ai: Use AI features
+            analytics: Access analytics
+            admin: Administrative access
+
+    BasicAuth:
+      type: http
+      scheme: basic
+      description: For service-to-service authentication
+
+  parameters:
+    TenantId:
+      name: X-Tenant-ID
+      in: header
+      required: true
+      description: Tenant identifier
+      schema:
+        type: string
+      example: acme_corp
+
+    RequestId:
+      name: X-Request-ID
+      in: header
+      required: false
+      description: Client-generated request ID for tracing
+      schema:
+        type: string
+        format: uuid
+
+    IdempotencyKey:
+      name: X-Idempotency-Key
+      in: header
+      required: false
+      description: Idempotency key for safe retries (required for mutations)
+      schema:
+        type: string
+
+    ArticleId:
+      name: articleId
+      in: path
+      required: true
+      description: Article unique identifier
+      schema:
+        type: string
+      example: art_789xyz
+
+    Cursor:
+      name: cursor
+      in: query
+      description: Pagination cursor from previous response
+      schema:
+        type: string
+
+    Limit:
+      name: limit
+      in: query
+      description: Maximum items to return
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+
+  headers:
+    X-RateLimit-Limit:
+      description: Request limit per window
+      schema:
+        type: integer
+      example: 100
+
+    X-RateLimit-Remaining:
+      description: Remaining requests in window
+      schema:
+        type: integer
+      example: 87
+
+    X-RateLimit-Reset:
+      description: Unix timestamp when window resets
+      schema:
+        type: integer
+      example: 1704540660
+
+  schemas:
+    # ---- Common Schemas ----
+    Error:
+      type: object
+      required:
+        - success
+        - error
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          required:
+            - code
+            - message
+          properties:
+            code:
+              type: string
+              example: VALIDATION_ERROR
+            message:
+              type: string
+              example: Request validation failed
+            details:
+              type: array
+              items:
+                type: object
+                properties:
+                  field:
+                    type: string
+                  code:
+                    type: string
+                  message:
+                    type: string
+            request_id:
+              type: string
+            documentation_url:
+              type: string
+              format: uri
+
+    Pagination:
+      type: object
+      properties:
+        cursor:
+          type: string
+          nullable: true
+        has_more:
+          type: boolean
+        limit:
+          type: integer
+
+    Links:
+      type: object
+      properties:
+        self:
+          type: string
+        next:
+          type: string
+          nullable: true
+        prev:
+          type: string
+          nullable: true
+
+    Meta:
+      type: object
+      properties:
+        request_id:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        version:
+          type: string
+
+    # ---- Auth Schemas ----
+    TokenResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+        token_type:
+          type: string
+          example: Bearer
+        expires_in:
+          type: integer
+          example: 900
+        refresh_token:
+          type: string
+        scope:
+          type: string
+
+    # ---- Search Schemas ----
+    SearchRequest:
+      type: object
+      required:
+        - query
+      properties:
+        query:
+          type: string
+          minLength: 2
+          maxLength: 500
+          example: "how to reset customer password"
+        filters:
+          type: object
+          properties:
+            categories:
+              type: array
+              items:
+                type: string
+            tags:
+              type: array
+              items:
+                type: string
+            access_level:
+              type: array
+              items:
+                type: string
+                enum: [public, internal, restricted, confidential]
+            status:
+              type: string
+              enum: [draft, published, archived]
+            date_range:
+              type: object
+              properties:
+                field:
+                  type: string
+                  enum: [created_at, updated_at, published_at]
+                from:
+                  type: string
+                  format: date-time
+                to:
+                  type: string
+                  format: date-time
+        options:
+          type: object
+          properties:
+            include_ai_answer:
+              type: boolean
+              default: false
+            highlight:
+              type: boolean
+              default: true
+            semantic_search:
+              type: boolean
+              default: true
+            limit:
+              type: integer
+              minimum: 1
+              maximum: 100
+              default: 20
+            cursor:
+              type: string
+              nullable: true
+        context:
+          type: object
+          description: Customer context for personalized AI answers
+          properties:
+            customer_tier:
+              type: string
+            product:
+              type: string
+            channel:
+              type: string
+
+    SearchResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: object
+          properties:
+            articles:
+              type: array
+              items:
+                $ref: '#/components/schemas/ArticleSummary'
+            ai_answer:
+              $ref: '#/components/schemas/AIAnswer'
+            facets:
+              type: object
+              properties:
+                categories:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      name:
+                        type: string
+                      count:
+                        type: integer
+                tags:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                      count:
+                        type: integer
+        meta:
+          type: object
+          properties:
+            total_results:
+              type: integer
+            returned:
+              type: integer
+            search_time_ms:
+              type: integer
+            request_id:
+              type: string
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+        links:
+          $ref: '#/components/schemas/Links'
+
+    SuggestionsResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            suggestions:
+              type: array
+              items:
+                type: object
+                properties:
+                  text:
+                    type: string
+                  type:
+                    type: string
+                    enum: [query, article]
+                  frequency:
+                    type: integer
+                  article_id:
+                    type: string
+        meta:
+          type: object
+          properties:
+            query:
+              type: string
+            response_time_ms:
+              type: integer
+
+    # ---- Article Schemas ----
+    ArticleSummary:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        snippet:
+          type: string
+          description: Highlighted search snippet
+        content_preview:
+          type: string
+        relevance_score:
+          type: number
+          format: float
+        category:
+          type: object
+          properties:
+            id:
+              type: string
+            name:
+              type: string
+        tags:
+          type: array
+          items:
+            type: string
+        access_level:
+          type: string
+        metadata:
+          type: object
+          properties:
+            author:
+              type: string
+            created_at:
+              type: string
+              format: date-time
+            updated_at:
+              type: string
+              format: date-time
+            version:
+              type: integer
+            view_count:
+              type: integer
+            helpful_count:
+              type: integer
+        links:
+          type: object
+          properties:
+            self:
+              type: string
+            html:
+              type: string
+
+    ArticleResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          $ref: '#/components/schemas/Article'
+        links:
+          type: object
+
+    Article:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        content:
+          type: string
+        content_format:
+          type: string
+          enum: [markdown, html, plain]
+        summary:
+          type: string
+        category:
+          type: object
+          properties:
+            id:
+              type: string
+            name:
+              type: string
+            path:
+              type: array
+              items:
+                type: string
+        tags:
+          type: array
+          items:
+            type: string
+        access_level:
+          type: string
+          enum: [public, internal, restricted, confidential]
+        status:
+          type: string
+          enum: [draft, published, archived, deleted]
+        metadata:
+          type: object
+          properties:
+            author:
+              type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+            created_at:
+              type: string
+              format: date-time
+            updated_at:
+              type: string
+              format: date-time
+            published_at:
+              type: string
+              format: date-time
+            version:
+              type: integer
+            word_count:
+              type: integer
+            reading_time_minutes:
+              type: integer
+        stats:
+          type: object
+          properties:
+            view_count:
+              type: integer
+            helpful_count:
+              type: integer
+            not_helpful_count:
+              type: integer
+            share_count:
+              type: integer
+        related_articles:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              title:
+                type: string
+              relevance:
+                type: number
+        attachments:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              filename:
+                type: string
+              mime_type:
+                type: string
+              size_bytes:
+                type: integer
+              url:
+                type: string
+
+    ArticleCreate:
+      type: object
+      required:
+        - title
+        - content
+        - category_id
+      properties:
+        title:
+          type: string
+          minLength: 5
+          maxLength: 200
+        content:
+          type: string
+          minLength: 50
+        content_format:
+          type: string
+          enum: [markdown, html, plain]
+          default: markdown
+        summary:
+          type: string
+          maxLength: 500
+        category_id:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+          maxItems: 10
+        access_level:
+          type: string
+          enum: [public, internal, restricted, confidential]
+          default: internal
+        status:
+          type: string
+          enum: [draft, published]
+          default: draft
+        metadata:
+          type: object
+          additionalProperties: true
+
+    ArticleCreateResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            id:
+              type: string
+            title:
+              type: string
+            status:
+              type: string
+            version:
+              type: integer
+            created_at:
+              type: string
+              format: date-time
+        links:
+          type: object
+
+    ArticleUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+        content:
+          type: string
+        summary:
+          type: string
+        category_id:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        access_level:
+          type: string
+        change_summary:
+          type: string
+          description: Description of changes for version history
+
+    ArticleUpdateResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            id:
+              type: string
+            title:
+              type: string
+            version:
+              type: integer
+            previous_version:
+              type: integer
+            updated_at:
+              type: string
+              format: date-time
+            change_summary:
+              type: string
+        links:
+          type: object
+
+    ArticleDeleteResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            id:
+              type: string
+            status:
+              type: string
+            deleted_at:
+              type: string
+              format: date-time
+            recoverable_until:
+              type: string
+              format: date-time
+        links:
+          type: object
+
+    ArticleListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            articles:
+              type: array
+              items:
+                $ref: '#/components/schemas/ArticleSummary'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+        links:
+          $ref: '#/components/schemas/Links'
+
+    ArticleVersionsResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            versions:
+              type: array
+              items:
+                type: object
+                properties:
+                  version:
+                    type: integer
+                  created_at:
+                    type: string
+                    format: date-time
+                  author:
+                    type: string
+                  change_summary:
+                    type: string
+                  is_current:
+                    type: boolean
+
+    # ---- AI Schemas ----
+    AIAnswer:
+      type: object
+      properties:
+        content:
+          type: string
+        confidence:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 1
+        confidence_level:
+          type: string
+          enum: [high, medium, low]
+        citations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Citation'
+        model:
+          type: string
+        generated_at:
+          type: string
+          format: date-time
+
+    Citation:
+      type: object
+      properties:
+        article_id:
+          type: string
+        title:
+          type: string
+        excerpt:
+          type: string
+        relevance:
+          type: number
+        url:
+          type: string
+
+    AIAnswerRequest:
+      type: object
+      required:
+        - query
+      properties:
+        query:
+          type: string
+          minLength: 5
+          maxLength: 1000
+        context:
+          type: object
+          properties:
+            customer_tier:
+              type: string
+            product:
+              type: string
+            channel:
+              type: string
+            previous_queries:
+              type: array
+              items:
+                type: string
+        options:
+          type: object
+          properties:
+            max_tokens:
+              type: integer
+              minimum: 50
+              maximum: 2000
+              default: 500
+            temperature:
+              type: number
+              minimum: 0
+              maximum: 1
+              default: 0.3
+            include_citations:
+              type: boolean
+              default: true
+            streaming:
+              type: boolean
+              default: false
+
+    AIAnswerResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            answer:
+              type: object
+              properties:
+                content:
+                  type: string
+                confidence:
+                  type: number
+                confidence_level:
+                  type: string
+            citations:
+              type: array
+              items:
+                $ref: '#/components/schemas/Citation'
+            related_questions:
+              type: array
+              items:
+                type: string
+            metadata:
+              type: object
+              properties:
+                model:
+                  type: string
+                tokens_used:
+                  type: object
+                  properties:
+                    prompt:
+                      type: integer
+                    completion:
+                      type: integer
+                    total:
+                      type: integer
+                latency_ms:
+                  type: integer
+                trace_id:
+                  type: string
+        meta:
+          $ref: '#/components/schemas/Meta'
+
+    AIFeedbackRequest:
+      type: object
+      required:
+        - trace_id
+        - rating
+      properties:
+        trace_id:
+          type: string
+        rating:
+          type: string
+          enum: [helpful, not_helpful]
+        feedback_type:
+          type: string
+          enum: [accuracy, relevance, completeness, clarity]
+        comment:
+          type: string
+          maxLength: 1000
+        corrections:
+          type: object
+          properties:
+            missing_info:
+              type: string
+            incorrect_info:
+              type: string
+        resolution_status:
+          type: string
+          enum: [resolved_with_answer, needed_modification, not_resolved]
+
+    AIFeedbackResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            feedback_id:
+              type: string
+            recorded_at:
+              type: string
+              format: date-time
+            impact:
+              type: string
+
+    # ---- Analytics Schemas ----
+    AnalyticsEvent:
+      type: object
+      required:
+        - event_type
+        - timestamp
+      properties:
+        event_type:
+          type: string
+          enum:
+            - search_performed
+            - article_viewed
+            - article_helpful
+            - ai_answer_shown
+            - ai_answer_copied
+            - ai_feedback_submitted
+            - session_started
+            - session_ended
+        timestamp:
+          type: string
+          format: date-time
+        session_id:
+          type: string
+        properties:
+          type: object
+          additionalProperties: true
+
+    AnalyticsEventBatch:
+      type: object
+      required:
+        - events
+      properties:
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/AnalyticsEvent'
+          minItems: 1
+          maxItems: 100
+
+    EventQueuedResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            event_id:
+              type: string
+            status:
+              type: string
+              enum: [queued]
+            queued_at:
+              type: string
+              format: date-time
+
+    BatchQueuedResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            batch_id:
+              type: string
+            events_accepted:
+              type: integer
+            events_rejected:
+              type: integer
+            status:
+              type: string
+
+    AnalyticsReportResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            report_type:
+              type: string
+            period:
+              type: object
+              properties:
+                from:
+                  type: string
+                  format: date-time
+                to:
+                  type: string
+                  format: date-time
+            metrics:
+              type: object
+              additionalProperties: true
+            time_series:
+              type: array
+              items:
+                type: object
+                additionalProperties: true
+            top_queries:
+              type: array
+              items:
+                type: object
+            top_articles:
+              type: array
+              items:
+                type: object
+        meta:
+          type: object
+          properties:
+            generated_at:
+              type: string
+              format: date-time
+            cache_hit:
+              type: boolean
+
+    # ---- Webhook Schemas ----
+    WebhookCreate:
+      type: object
+      required:
+        - url
+        - events
+      properties:
+        url:
+          type: string
+          format: uri
+        events:
+          type: array
+          items:
+            type: string
+            enum:
+              - article.created
+              - article.published
+              - article.updated
+              - article.deleted
+              - ai.feedback.negative
+              - search.zero_results
+        secret:
+          type: string
+        active:
+          type: boolean
+          default: true
+
+    WebhookResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            id:
+              type: string
+            url:
+              type: string
+            events:
+              type: array
+              items:
+                type: string
+            active:
+              type: boolean
+            created_at:
+              type: string
+              format: date-time
+
+    WebhookListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            webhooks:
+              type: array
+              items:
+                $ref: '#/components/schemas/WebhookResponse'
+
+  responses:
+    BadRequest:
+      description: Invalid request parameters
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: VALIDATION_ERROR
+              message: Request validation failed
+              details:
+                - field: query
+                  code: min_length
+                  message: Query must be at least 2 characters
+
+    Unauthorized:
+      description: Authentication required or invalid
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: UNAUTHORIZED
+              message: Invalid or expired authentication token
+
+    Forbidden:
+      description: Insufficient permissions
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: FORBIDDEN
+              message: User lacks permission to access this resource
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: NOT_FOUND
+              message: Article not found
+
+    Conflict:
+      description: Resource conflict (version mismatch or duplicate)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: CONFLICT
+              message: Article has been modified. Please refresh and retry.
+
+    RateLimited:
+      description: Rate limit exceeded
+      headers:
+        Retry-After:
+          schema:
+            type: integer
+          description: Seconds to wait before retrying
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/X-RateLimit-Limit'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/X-RateLimit-Remaining'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/X-RateLimit-Reset'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: RATE_LIMITED
+              message: Rate limit exceeded. Retry after 45 seconds.
+              details:
+                limit: 100
+                window: "1 minute"
+                retry_after: 45
+
+    ServiceUnavailable:
+      description: Service temporarily unavailable
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              code: SERVICE_UNAVAILABLE
+              message: Search service temporarily unavailable. Please retry.

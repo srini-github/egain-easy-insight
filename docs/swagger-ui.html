@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>eGain Easy Insight API Documentation</title>
+  <link rel="stylesheet" type="text/css" href="https://unpkg.com/swagger-ui-dist@5.11.0/swagger-ui.css" />
+  <style>
+    html {
+      box-sizing: border-box;
+      overflow-y: scroll;
+    }
+
+    *,
+    *:before,
+    *:after {
+      box-sizing: inherit;
+    }
+
+    body {
+      margin: 0;
+      background: #fafafa;
+    }
+
+    .swagger-ui .topbar {
+      display: none;
+    }
+
+    .custom-header {
+      background: linear-gradient(135deg, #1a365d 0%, #2d5a87 100%);
+      color: white;
+      padding: 20px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .custom-header h1 {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 24px;
+      font-weight: 600;
+    }
+
+    .custom-header .subtitle {
+      margin: 5px 0 0 0;
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    .custom-header .links {
+      display: flex;
+      gap: 20px;
+    }
+
+    .custom-header .links a {
+      color: white;
+      text-decoration: none;
+      font-size: 14px;
+      padding: 8px 16px;
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 4px;
+      transition: all 0.2s;
+    }
+
+    .custom-header .links a:hover {
+      background: rgba(255,255,255,0.1);
+      border-color: rgba(255,255,255,0.5);
+    }
+
+    .swagger-ui .info {
+      margin: 30px 0;
+    }
+
+    .swagger-ui .info .title {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    /* Improve readability */
+    .swagger-ui .opblock-summary-description {
+      font-size: 14px;
+    }
+
+    .swagger-ui .opblock .opblock-summary-operation-id {
+      font-size: 13px;
+    }
+
+    /* Better color scheme for methods */
+    .swagger-ui .opblock.opblock-post {
+      border-color: #49cc90;
+      background: rgba(73, 204, 144, 0.1);
+    }
+
+    .swagger-ui .opblock.opblock-get {
+      border-color: #61affe;
+      background: rgba(97, 175, 254, 0.1);
+    }
+
+    .swagger-ui .opblock.opblock-put {
+      border-color: #fca130;
+      background: rgba(252, 161, 48, 0.1);
+    }
+
+    .swagger-ui .opblock.opblock-delete {
+      border-color: #f93e3e;
+      background: rgba(249, 62, 62, 0.1);
+    }
+
+    /* Footer */
+    .custom-footer {
+      text-align: center;
+      padding: 20px;
+      color: #666;
+      font-size: 12px;
+      border-top: 1px solid #eee;
+      margin-top: 40px;
+    }
+  </style>
+</head>
+<body>
+  <div class="custom-header">
+    <div>
+      <h1>eGain Easy Insight API</h1>
+      <p class="subtitle">Knowledge Management Platform - RESTful API Documentation</p>
+    </div>
+    <div class="links">
+      <a href="API.md">Markdown Docs</a>
+      <a href="openapi.yaml" download>Download OpenAPI Spec</a>
+      <a href="ARCHITECTURE.md">Architecture</a>
+    </div>
+  </div>
+
+  <div id="swagger-ui"></div>
+
+  <div class="custom-footer">
+    <p>eGain Easy Insight API v1.0.0 | OpenAPI 3.1 Specification</p>
+    <p>For support, contact: api-support@egain.com</p>
+  </div>
+
+  <script src="https://unpkg.com/swagger-ui-dist@5.11.0/swagger-ui-bundle.js" charset="UTF-8"></script>
+  <script src="https://unpkg.com/swagger-ui-dist@5.11.0/swagger-ui-standalone-preset.js" charset="UTF-8"></script>
+  <script>
+    window.onload = function() {
+      const ui = SwaggerUIBundle({
+        url: "openapi.yaml",
+        dom_id: '#swagger-ui',
+        deepLinking: true,
+        presets: [
+          SwaggerUIBundle.presets.apis,
+          SwaggerUIStandalonePreset
+        ],
+        plugins: [
+          SwaggerUIBundle.plugins.DownloadUrl
+        ],
+        layout: "StandaloneLayout",
+        defaultModelsExpandDepth: 1,
+        defaultModelExpandDepth: 1,
+        docExpansion: "list",
+        filter: true,
+        showExtensions: true,
+        showCommonExtensions: true,
+        tryItOutEnabled: false,
+        supportedSubmitMethods: [],
+        validatorUrl: null
+      });
+
+      window.ui = ui;
+    };
+  </script>
+</body>
+</html>
